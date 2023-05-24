@@ -13,15 +13,15 @@ class RegisterMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $mailData;
+    public $data;
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($mailData)
+    public function __construct($data)
     {
-        $this->mailData = $mailData;
+        $this->data = $data;
     }
 
     /**
@@ -31,6 +31,6 @@ class RegisterMail extends Mailable
      */
     public function build()
     {
-        return $this->subject($this->mailData->subject)->view('email.register');
+        return $this->subject('Registration Successfull')->view('email.register');
     }
 }

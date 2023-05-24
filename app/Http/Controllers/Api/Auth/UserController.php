@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-use App\Mail\RegisterEmail;
+use App\Mail\RegisterMail;
 use Illuminate\Support\Facades\Mail;
 // use Mail;
 
@@ -52,11 +52,12 @@ class UserController extends Controller
                 "name" => $user->full_name,
             ];
         
-            Mail::send('email.register', $data, function($message,$user) {
-                $message->to($user->email, $user->full_name)->subject
-                   ('Registration Successful');
-                $message->from('admin@jojoelectricals.com','Jojo Electricals');
-             });
+            // Mail::send('email.register', $data, function($message,$user) {
+            //     $message->to($user->email, $user->full_name)->subject
+            //        ('Registration Successful');
+            //     $message->from('admin@jojoelectricals.com','Jojo Electricals');
+            //  });
+            Mail::to($request->email)->send(new RegisterMail($data));
         }
 
         $token = $user->createToken('auth_token')->accessToken;

@@ -7,8 +7,7 @@
     <title>Register email</title>
 </head>
 <body>
-    <h1>Test EMAIL</h1>
-    <p>Hi {{ $name }},</p>
+    <p>Hi {{ $data['name']}},</p>
     <p>Welcome on board. click on the link below to login </p><br>
     <a href="https://jojoelectricals.com/login">CLICK HERE</a>
 
