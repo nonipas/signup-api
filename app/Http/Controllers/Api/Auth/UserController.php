@@ -52,8 +52,8 @@ class UserController extends Controller
                 "name" => $user->full_name,
             ];
         
-            Mail::send('email.register', $data, function($message) {
-                $message->to('abc@gmail.com', 'Tutorials Point')->subject
+            Mail::send('email.register', $data, function($message,$user) {
+                $message->to($user->email, $user->full_name)->subject
                    ('Registration Successful');
                 $message->from('admin@jojoelectricals.com','Jojo Electricals');
              });
