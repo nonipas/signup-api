@@ -9,6 +9,10 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use App\Mail\RegisterMail;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Http;
+
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 // use Mail;
 
 
@@ -60,8 +64,8 @@ class UserController extends Controller
             Mail::to($request->email)->send(new RegisterMail($data));
         }
 
-        $token = $user->createToken('auth_token')->accessToken;
-        return response()->json(['token' => $token], 200);
+        // $token = $user->createToken('auth_token')->accessToken;
+        return response()->json(['status'=>200,'message' => 'registered successfully'], 200);
     }
 
     public function login(Request $request)
@@ -97,10 +101,17 @@ class UserController extends Controller
         $user = User::where('email',$email)->first();
 
         if (isset($user) && auth()->attempt($data)) {
+            // $token = $user->createToken('signinToken')->accessToken;
+            $response = Http::asForm()->post('http://localhost/api-test/signup-api/public/oauth/token', [
+                'grant_type' => 'password',
+                'client_id' => '4',
+                'client_secret' => 'WSIMH1ECc1ix10f7Bs2PnjLbMCXCYQxaMZMOK6T4',
+                'username' => $request->email,
+                'password' => $request->password,
+                'scope' => '',
+            ]);
 
-            $token = auth()->user()->createToken('auth_token')->accessToken;
-
-            return response()->json(['token' => $token], 200);
+            return response()->json(['status'=>200,$response->json()], 200);
 
         } else {
             $errors = [];
@@ -110,14 +121,16 @@ class UserController extends Controller
             ], 401);
         }
     }
-    public function logout(){
-        auth()->user()->token()->revoke();
+    public function logout(Request $request){
+
+        $request->user()->token()->revoke();
         return response([
             'message' => 'logged out successfully'
         ], 200);
     }
 
-    public function getUserInfo(){
+    public function getUserInfo(Request $request){
+        // $this->refreshToken($request);
         if (auth()->user()){
             $user = auth()->user();
             return response([
@@ -129,7 +142,8 @@ class UserController extends Controller
         ], 401);
     }
 
-    public function getAllUsers(){
+    public function getAllUsers(Request $request){
+        // $this->refreshToken($request);
         if (auth()->user()){
             $users = User::all();
             if($users){
@@ -146,4 +160,19 @@ class UserController extends Controller
             'message' => 'unauthorized'
         ], 401);
     }
+
+    public function refreshToken(Request $request)
+    {
+        $refreshToken = $request->input('refresh_token');
+
+        $response = Http::asForm()->post('http://localhost/api-test/signup-api/public/oauth/token', [
+            'grant_type' => 'refresh_token',
+            'refresh_token' => $refreshToken,
+            'client_id' => '4',
+            'client_secret' => 'WSIMH1ECc1ix10f7Bs2PnjLbMCXCYQxaMZMOK6T4',
+            'scope' => '',
+        ]);
+         
+        return $response->json();
+    } 
 }
