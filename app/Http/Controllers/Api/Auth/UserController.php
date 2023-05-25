@@ -102,10 +102,10 @@ class UserController extends Controller
 
         if (isset($user) && auth()->attempt($data)) {
             // $token = $user->createToken('signinToken')->accessToken;
-            $response = Http::asForm()->post('http://localhost/api-test/signup-api/public/oauth/token', [
+            $response = Http::asForm()->post(env('APP_URL','https://api.jojoelectricals.com').'/oauth/token', [
                 'grant_type' => 'password',
-                'client_id' => '4',
-                'client_secret' => 'WSIMH1ECc1ix10f7Bs2PnjLbMCXCYQxaMZMOK6T4',
+                'client_id' => env('PASSPORT_PERSONAL_ACCESS_CLIENT_ID'),
+                'client_secret' => env('PASSPORT_PERSONAL_ACCESS_CLIENT_SECRET'),
                 'username' => $request->email,
                 'password' => $request->password,
                 'scope' => '',
@@ -164,12 +164,12 @@ class UserController extends Controller
     public function refreshToken(Request $request)
     {
         $refreshToken = $request->input('refresh_token');
-
-        $response = Http::asForm()->post('http://localhost/api-test/signup-api/public/oauth/token', [
+        $url = 
+        $response = Http::asForm()->post(env('APP_URL','https://api.jojoelectricals.com').'/oauth/token', [
             'grant_type' => 'refresh_token',
             'refresh_token' => $refreshToken,
-            'client_id' => '4',
-            'client_secret' => 'WSIMH1ECc1ix10f7Bs2PnjLbMCXCYQxaMZMOK6T4',
+            'client_id' => env('PASSPORT_PERSONAL_ACCESS_CLIENT_ID'),
+            'client_secret' => env('PASSPORT_PERSONAL_ACCESS_CLIENT_SECRET'),
             'scope' => '',
         ]);
          
